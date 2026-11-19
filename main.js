@@ -19,8 +19,8 @@
   // release has been read. The other packages are found in the release by
   // their ending and the processor's name.
   var ARCHES = {
-    x64: { label: 'x86-64', words: /(x86[_-]64|x64|amd64)/i, appimage: 'Longboard-x86_64.AppImage' },
-    arm64: { label: 'ARM64', words: /(arm64|aarch64)/i, appimage: 'Longboard-arm64.AppImage' },
+    x64: { label: 'Intel/AMD', long: 'Intel and AMD PCs', words: /(x86[_-]64|x64|amd64)/i, appimage: 'Longboard-x86_64.AppImage' },
+    arm64: { label: 'ARM', long: 'ARM computers', words: /(arm64|aarch64)/i, appimage: 'Longboard-arm64.AppImage' },
   };
   var FORMATS = {
     appimage: { label: 'AppImage', ending: /\.AppImage$/i, how: function (f) { return 'chmod +x ' + f + '\n./' + f; } },
@@ -28,7 +28,7 @@
     targz: { label: 'tar.gz', ending: /\.tar\.gz$/i, how: function (f) { return 'tar -xzf ' + f; } },
   };
 
-  var OS_NAMES = { windows: 'Windows', mac: 'macOS', android: 'Android', ios: 'an iPhone or iPad', chromeos: 'ChromeOS' };
+  var OS_NAMES = { windows: 'Windows', mac: 'macOS', android: 'Android', ios: 'iOS', chromeos: 'ChromeOS' };
 
   /** What the visitor's browser says it runs on: {os, arch}. arch is null when it does not say. */
   function detectPlatform() {
@@ -116,11 +116,9 @@
     var direct = os === 'linux' && top;
     if (hero) {
       hero.href = direct ? top.url : '#download';
-      $('hero-download-label').textContent = direct ? 'Download for Linux' : 'Get Longboard for Linux';
-      var bits = direct ? [arch.label + ' AppImage'] : ['Choose a package for your TV box'];
-      if (direct && version) bits.push('version ' + version);
+      $('hero-download-label').textContent = direct ? 'Download for Linux' : 'Get Longboard';
+      var bits = direct ? [version ? 'Version ' + version : 'Latest version', 'for ' + arch.long] : ['Choose the version for your TV computer'];
       if (direct && top.size) bits.push(megabytes(top.size));
-      if (direct && !version) bits.push('latest release');
       $('hero-download-sub').textContent = bits.join(' · ');
       // With nothing to download directly, the second button would lead to the same place.
       if ($('hero-all')) $('hero-all').hidden = !direct;
@@ -128,20 +126,21 @@
     var note = $('hero-note');
     if (note) {
       if (os === 'linux') {
-        note.textContent = 'Free and open source. No telemetry.' + (state.archKnown ? '' : ' On an ARM box? See all packages.');
+        note.textContent = 'An early version. No tracking.' + (state.archKnown ? '' : ' Using a Raspberry Pi? See all downloads.');
       } else if (OS_NAMES[os]) {
-        note.textContent = 'You are on ' + OS_NAMES[os] + '. Longboard runs on Linux, on the box behind your TV. Free and open source.';
+        note.textContent = 'You are on ' + OS_NAMES[os] + '. Longboard runs on a Linux computer connected to your TV.';
       }
     }
 
     // The section's opening line.
     var line = $('dl-detected');
     if (line) {
-      var tail = ' These always point at the latest release.';
-      if (os === 'linux' && state.archKnown) line.textContent = 'This looks like Linux on ' + arch.label + ', so that is what is picked below.' + tail;
-      else if (os === 'linux') line.textContent = 'This looks like Linux. Pick the processor your TV box has.' + tail;
-      else if (os === 'android') line.textContent = 'You are on Android. Longboard runs on Linux with a desktop session; there is no Android TV version. Pick a package for the box behind your TV.' + tail;
-      else if (OS_NAMES[os]) line.textContent = 'You are on ' + OS_NAMES[os] + '. Longboard runs on Linux with a desktop session, so pick a package for the box behind your TV.' + tail;
+      var tail = ' You always get the latest version here.';
+      var where = 'Longboard runs on a Linux computer connected to your TV, such as a mini PC or a Raspberry Pi.';
+      if (os === 'linux' && state.archKnown) line.textContent = 'You are on Linux, so the version for this computer is already selected. Installing on a different one? Change it below.' + tail;
+      else if (os === 'linux') line.textContent = 'You are on Linux. Choose the kind of computer you are installing on.' + tail;
+      else if (os === 'android') line.textContent = 'You are on Android. ' + where + ' There is no Android TV version. Choose the computer you will install it on.' + tail;
+      else if (OS_NAMES[os]) line.textContent = 'You are on ' + OS_NAMES[os] + '. ' + where + ' Choose the one you will install it on.' + tail;
     }
     var badge = $('dl-version');
     if (badge) badge.textContent = version ? 'v' + version + (state.release.date ? ' · ' + state.release.date : '') : '';
@@ -168,8 +167,8 @@
         how.textContent = FORMATS[f].how(file.name);
       } else {
         link.href = RELEASE_PAGE;
-        strong.textContent = state.files ? 'Not in this release' : 'Download';
-        meta.textContent = state.files ? 'See the release page' : arch.label + ' · on the release page';
+        strong.textContent = state.files ? 'Not in this version' : 'Download';
+        meta.textContent = state.files ? 'See all downloads' : arch.label + ' · on the downloads page';
       }
     });
 
@@ -296,7 +295,7 @@
 
     function back() {
       if (stack.length > 1) { stack.pop(); show(); }
-      else say('Already on Home');
+      else say('You are on the home screen');
     }
 
     function menu() {
