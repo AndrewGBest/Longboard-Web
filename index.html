@@ -10,6 +10,7 @@
 <meta property="og:title" content="Longboard: a web browser for the TV">
 <meta property="og:description" content="Browse the web from the couch with a remote, a game controller or a keyboard.">
 <meta property="og:type" content="website">
+<script>document.documentElement.className = "js";</script>
 <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="styles.css">
 </head>
@@ -70,8 +71,8 @@
             <div class="tile" data-t data-do="open:News"><span class="mono" style="--m:#3d4f8f">N</span><b>News</b><small>news.example</small></div>
             <div class="tile" data-t data-do="open:Weather"><span class="mono" style="--m:#5a6b2c">W</span><b>Weather</b><small>weather.example</small></div>
           </div>
-          <div class="row-title">Recently opened</div>
-          <div class="tiles">
+          <div class="row-title row-more">Recently opened</div>
+          <div class="tiles row-more">
             <div class="tile" data-t data-do="open:Recipes"><span class="mono" style="--m:#7a3d63">R</span><b>Recipes</b><small>recipes.example</small></div>
             <div class="tile" data-t data-do="open:Maps"><span class="mono" style="--m:#2c6f72">M</span><b>Maps</b><small>maps.example</small></div>
             <div class="tile" data-t data-do="open:Forum"><span class="mono" style="--m:#8a4a2a">F</span><b>Forum</b><small>forum.example</small></div>
@@ -198,7 +199,7 @@
       </div>
       <div>
         <h4>No Menu button on your remote? Press Up twice.</h4>
-        <p>At the top of any website, press Up, then Up again, and the menu slides in. Every remote can reach tabs, history, the pointer and settings this way. Try it on the TV above: open a site, then press Up twice.</p>
+        <p>At the top of any website, press Up, then Up again, and the menu slides in. Every remote can reach tabs, history, the pointer and settings this way. <span class="js-only">Try it on the TV above: open a site, then press Up twice.</span></p>
       </div>
     </div>
     <div class="table-wrap">

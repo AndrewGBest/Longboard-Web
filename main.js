@@ -41,11 +41,15 @@
     else if (/cros/i.test(ua) || platform === 'chrome os' || platform === 'chromeos') os = 'chromeos';
     else if (/win/.test(platform) || /windows/i.test(ua)) os = 'windows';
     else if (/mac/.test(platform) || /mac os x/i.test(ua)) os = 'mac';
-    else if (/linux|x11/.test(platform) || /linux|x11/i.test(ua)) os = 'linux';
+    else if (/linux/.test(platform) || /linux/i.test(ua)) os = 'linux';
 
     var arch = null;
-    if (/aarch64|arm64|armv8/i.test(ua + ' ' + platform)) arch = 'arm64';
-    else if (/x86_64|x64|amd64|win64/i.test(ua + ' ' + platform)) arch = 'x64';
+    // Only a Linux machine's processor says anything about which package it
+    // needs. 32-bit systems (armv7l, i686) match neither: there is no package for them.
+    if (os === 'linux') {
+      if (/aarch64|arm64/i.test(ua + ' ' + platform)) arch = 'arm64';
+      else if (/x86_64|x64|amd64/i.test(ua + ' ' + platform)) arch = 'x64';
+    }
     return { os: os, arch: arch };
   }
 
@@ -87,7 +91,7 @@
     return out;
   }
 
-  var state = { platform: detectPlatform(), arch: 'x64', archKnown: false, release: null, files: null };
+  var state = { platform: detectPlatform(), arch: 'x64', archKnown: false, byHand: false, release: null, files: null };
   if (state.platform.arch) { state.arch = state.platform.arch; state.archKnown = true; }
 
   function $(id) { return document.getElementById(id); }
@@ -113,11 +117,11 @@
     // browser cannot know, so the button goes to the choices instead.
     var top = fileFor('appimage');
     var hero = $('hero-download');
-    var direct = os === 'linux' && top;
+    var direct = os === 'linux' && state.archKnown && top;
     if (hero) {
       hero.href = direct ? top.url : '#download';
       $('hero-download-label').textContent = direct ? 'Download for Linux' : 'Get Longboard';
-      var bits = direct ? [version ? 'Version ' + version : 'Latest version', 'for ' + arch.long] : ['Choose the version for your TV computer'];
+      var bits = direct ? [version ? 'Version ' + version : 'Latest version', 'for ' + arch.long] : [os === 'linux' ? 'Choose the version for your computer' : 'Choose the version for your TV computer'];
       if (direct && top.size) bits.push(megabytes(top.size));
       $('hero-download-sub').textContent = bits.join(' · ');
       // With nothing to download directly, the second button would lead to the same place.
@@ -126,7 +130,7 @@
     var note = $('hero-note');
     if (note) {
       if (os === 'linux') {
-        note.textContent = 'An early version. No tracking.' + (state.archKnown ? '' : ' Using a Raspberry Pi? See all downloads.');
+        note.textContent = 'An early version. No tracking.';
       } else if (OS_NAMES[os]) {
         note.textContent = 'You are on ' + OS_NAMES[os] + '. Longboard runs on a Linux computer connected to your TV.';
       }
@@ -184,16 +188,16 @@
         if (!input.checked) return;
         state.arch = input.value;
         state.archKnown = true;
+        state.byHand = true;
         renderDownloads();
       });
     });
     renderDownloads();
 
     askArchitecture().then(function (arch) {
-      // What the visitor chose by hand is not overridden.
-      var chosen = document.querySelector('input[name="arch"]:checked');
-      if (!arch || (chosen && chosen.value !== state.arch)) return;
-      if (state.platform.os !== 'linux' && state.platform.os !== 'chromeos' && state.platform.os !== 'other') return;
+      // What the visitor chose by hand is not overridden, and only a Linux
+      // machine's own processor is a reason to pick for them.
+      if (!arch || state.byHand || state.platform.os !== 'linux') return;
       state.arch = arch;
       state.archKnown = true;
       renderDownloads();
@@ -233,7 +237,8 @@
     var upAtTop = false;
 
     function top() { return views[stack[stack.length - 1]]; }
-    function targets() { return Array.prototype.slice.call(top().querySelectorAll('[data-t]')); }
+    /** What can take the highlight now. On a small screen some of the made-up tiles are not shown. */
+    function targets() { return Array.prototype.filter.call(top().querySelectorAll('[data-t]'), function (el) { return el.getClientRects().length > 0; }); }
     function focused() { return top().querySelector('[data-focus]'); }
 
     function focus(el) {
