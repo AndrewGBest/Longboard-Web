@@ -78,7 +78,8 @@
         if (!FORMATS[f].ending.test(a.name)) return;
         Object.keys(ARCHES).forEach(function (arch) {
           if (ARCHES[arch].words.test(a.name) && !out[arch][f]) {
-            out[arch][f] = { name: a.name, url: a.browser_download_url, size: typeof a.size === 'number' ? a.size : 0 };
+            var digest = typeof a.digest === 'string' ? /^sha256:([0-9a-f]{64})$/i.exec(a.digest) : null;
+            out[arch][f] = { name: a.name, url: a.browser_download_url, size: typeof a.size === 'number' ? a.size : 0, sha256: digest ? digest[1].toLowerCase() : null };
           }
         });
       });
@@ -107,24 +108,29 @@
     var os = state.platform.os;
     var version = state.release ? state.release.version : '';
 
-    // The button at the top.
+    // The button at the top. On Linux it is the file itself. Anywhere else
+    // the visitor is fetching it for another machine, whose processor this
+    // browser cannot know, so the button goes to the choices instead.
     var top = fileFor('appimage');
     var hero = $('hero-download');
+    var direct = os === 'linux' && top;
     if (hero) {
-      hero.href = top ? top.url : '#download';
-      $('hero-download-label').textContent = 'Download for Linux';
-      var bits = [arch.label + ' AppImage'];
-      if (version) bits.push('version ' + version);
-      if (top && top.size) bits.push(megabytes(top.size));
-      if (!version) bits.push('latest release');
+      hero.href = direct ? top.url : '#download';
+      $('hero-download-label').textContent = direct ? 'Download for Linux' : 'Get Longboard for Linux';
+      var bits = direct ? [arch.label + ' AppImage'] : ['Choose a package for your TV box'];
+      if (direct && version) bits.push('version ' + version);
+      if (direct && top.size) bits.push(megabytes(top.size));
+      if (direct && !version) bits.push('latest release');
       $('hero-download-sub').textContent = bits.join(' · ');
+      // With nothing to download directly, the second button would lead to the same place.
+      if ($('hero-all')) $('hero-all').hidden = !direct;
     }
     var note = $('hero-note');
     if (note) {
       if (os === 'linux') {
-        note.textContent = 'Free, GPL-3.0. No telemetry.' + (state.archKnown ? '' : ' On an ARM box? See all packages.');
+        note.textContent = 'Free and open source. No telemetry.' + (state.archKnown ? '' : ' On an ARM box? See all packages.');
       } else if (OS_NAMES[os]) {
-        note.textContent = 'You are on ' + OS_NAMES[os] + '. Longboard runs on Linux, so this is for the box behind your TV. Free, GPL-3.0.';
+        note.textContent = 'You are on ' + OS_NAMES[os] + '. Longboard runs on Linux, on the box behind your TV. Free and open source.';
       }
     }
 
@@ -138,7 +144,7 @@
       else if (OS_NAMES[os]) line.textContent = 'You are on ' + OS_NAMES[os] + '. Longboard runs on Linux with a desktop session, so pick a package for the box behind your TV.' + tail;
     }
     var badge = $('dl-version');
-    if (badge) badge.textContent = version ? 'v' + version : '';
+    if (badge) badge.textContent = version ? 'v' + version + (state.release.date ? ' · ' + state.release.date : '') : '';
 
     // One card per kind of package.
     Object.keys(FORMATS).forEach(function (f) {
@@ -149,7 +155,12 @@
       var meta = card.querySelector('[data-meta]');
       var how = card.querySelector('[data-how]');
       var strong = link.querySelector('strong');
+      var sum = card.querySelector('.sum');
       card.classList.toggle('missing', !file);
+      if (sum) {
+        sum.hidden = !(file && file.sha256);
+        if (file && file.sha256) sum.querySelector('[data-sum]').textContent = 'echo "' + file.sha256 + '  ' + file.name + '" | sha256sum --check';
+      }
       if (file) {
         link.href = file.url;
         strong.textContent = 'Download';
@@ -196,7 +207,8 @@
         if (!raw || raw.draft || raw.prerelease) return;
         var m = /^v?(\d{1,5}\.\d{1,5}\.\d{1,5})$/.exec(String(raw.tag_name || '').trim());
         if (!m) return;
-        state.release = { version: m[1] };
+        var when = new Date(raw.published_at);
+        state.release = { version: m[1], date: isNaN(when) ? '' : when.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) };
         state.files = sortAssets(raw);
         renderDownloads();
       })
@@ -333,23 +345,32 @@
     var taken = false;
     var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+    var toggle = $('demo-toggle');
+
     function tick() {
       if (taken || !visible || document.hidden) return;
       press(script[step % script.length]);
       step++;
     }
+    /** Anybody pressing anything, or the Pause button, stops it. Only the button starts it again. */
     function take() {
       taken = true;
       clearInterval(auto);
+      if (toggle) toggle.textContent = 'Play the demo';
     }
-    if (!still) {
+    function play() {
+      taken = false;
+      clearInterval(auto);
       auto = setInterval(tick, 1150);
-      if ('IntersectionObserver' in window) {
-        new IntersectionObserver(function (entries) { visible = entries[0].isIntersecting; }, { threshold: 0.4 }).observe(screen);
-      } else {
-        visible = true;
-      }
+      if (toggle) toggle.textContent = 'Pause the demo';
     }
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (entries) { visible = entries[0].isIntersecting; }, { threshold: 0.4 }).observe(screen);
+    } else {
+      visible = true;
+    }
+    if (still) take(); else play();
+    if (toggle) toggle.addEventListener('click', function () { if (taken) play(); else take(); });
 
     remote.addEventListener('click', function (e) {
       var button = e.target.closest ? e.target.closest('[data-key]') : null;

@@ -24,7 +24,7 @@
   <nav aria-label="Sections">
     <a href="#how">How it works</a>
     <a href="#inside">What's in it</a>
-    <a href="#honest">Limits</a>
+    <a href="#know">Before you install</a>
     <a href="https://github.com/AndrewGBest/Longboard">GitHub</a>
     <a class="nav-cta" href="#download">Download</a>
   </nav>
@@ -35,8 +35,8 @@
 <section class="hero">
   <div class="hero-copy">
     <p class="eyebrow">Open source · Linux · early build</p>
-    <h1>The whole web,<br>from the couch.</h1>
-    <p class="lead">Longboard is a web browser for the TV. You drive it with a remote, a game controller or a keyboard, by moving a highlight from one thing to the next.</p>
+    <h1>A web browser for your TV.</h1>
+    <p class="lead">Drive websites from the couch with a remote, a game controller or a keyboard, by moving a highlight from one thing to the next.</p>
     <div class="cta">
       <a class="button primary" id="hero-download" href="https://github.com/AndrewGBest/Longboard/releases/latest/download/Longboard-x86_64.AppImage">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M5 20h14"/></svg>
@@ -45,9 +45,9 @@
           <small id="hero-download-sub">x86-64 AppImage, latest release</small>
         </span>
       </a>
-      <a class="button quiet" href="#download">All packages</a>
+      <a class="button quiet" id="hero-all" href="#download">All packages</a>
     </div>
-    <p class="hero-note" id="hero-note">Free, GPL-3.0. No telemetry.</p>
+    <p class="hero-note"><span id="hero-note">Free and open source. No telemetry.</span> <a href="https://github.com/AndrewGBest/Longboard">Source on GitHub</a></p>
   </div>
 
   <div class="stage">
@@ -121,8 +121,10 @@
         <button type="button" data-key="back">Back</button>
         <button type="button" data-key="menu">Menu</button>
       </div>
-      <p class="remote-hint">Try it. Six buttons are enough: the arrows, OK and Back.</p>
+      <p class="remote-hint">Try it: six buttons are enough. Or click the TV and use your arrow keys.</p>
+      <button type="button" class="demo-toggle" id="demo-toggle">Pause the demo</button>
     </div>
+    <p class="stage-note">A re-creation of Longboard's home screen running in this page, with made-up sites. It is not a recording of the program.</p>
   </div>
 </section>
 
@@ -133,19 +135,22 @@
   </div>
   <ol class="ladder">
     <li>
-      <span class="step">1</span>
+      <div class="mini mini-profile" aria-hidden="true"><i></i><i></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div>
+      <span class="step">First</span>
       <h3>A profile, when the site has one</h3>
-      <p>A profile is a small settings file for one website that tells Longboard exactly how that site is laid out: what can take the highlight, how rows and grids are grouped, where the player is. If a reviewed profile exists for the site you open, Longboard uses it by itself.</p>
+      <p>A small settings file for one website that tells Longboard how it is laid out: its rows, its grids, its player. A reviewed profile is used by itself.</p>
     </li>
     <li>
-      <span class="step">2</span>
+      <div class="mini mini-generic" aria-hidden="true"><i></i><i></i><i class="on"></i><i></i><i></i><i></i></div>
+      <span class="step">No profile?</span>
       <h3>Generic mode, for everything else</h3>
-      <p>For a site with no profile, Longboard finds the things you can press on the page and moves the highlight between them by where they sit on screen. When there is nothing to move to, the page scrolls. Any website works to some degree.</p>
+      <p>Longboard finds the things you can press and moves the highlight between them by where they sit on screen. Any website works to some degree.</p>
     </li>
     <li>
-      <span class="step">3</span>
+      <div class="mini mini-pointer" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 3l14 8-6 2-2 6z"/></svg></div>
+      <span class="step">Still stuck?</span>
       <h3>A pointer, when you need one</h3>
-      <p>One button gives you an on-screen cursor, moved with the arrows or a controller's stick, for maps, canvases and the pages the highlight cannot handle. The same button switches back.</p>
+      <p>One button gives you an on-screen cursor, moved with the arrows or a controller's stick, for maps, canvases and pages the highlight cannot handle.</p>
     </li>
   </ol>
   <p class="aside">Profiles are data, not programs, so anyone can make one. Write it, export it as a file, import someone else's, or submit it to the <a href="https://github.com/AndrewGBest/Longboard-Profiles">shared catalogue</a>.</p>
@@ -159,35 +164,27 @@
   <div class="features">
     <article>
       <h3>Any website can be an app</h3>
-      <p>Add a site to the home screen and to your TV's app list, and it opens like an app. Each one can share sign-ins with the rest of Longboard or keep its own.</p>
+      <p>Add a site to Home and to your TV's app list, and it opens like an app.</p>
     </article>
     <article>
       <h3>Type from a phone, or speak</h3>
-      <p>Scan a code and a phone on the same home network becomes the keyboard. Or use Speak: the words are worked out on your machine. English only for now.</p>
+      <p>Scan a code and a phone on your home network becomes the keyboard. Speech is worked out on your machine, in English for now.</p>
     </article>
     <article>
       <h3>Video keys that work</h3>
-      <p>When a video is playing full screen, the buttons become play, pause and seek. A page that is not in front is stopped, so nothing plays behind what you are watching.</p>
+      <p>With a video full screen, the buttons become play, pause and seek. A page that is not in front is stopped.</p>
     </article>
     <article>
-      <h3>An ad-blocking switch for every site</h3>
-      <p>It refuses requests that a public filter list names, and it is yours to control: per site, or on or off for every site. Longboard never flips it for you.</p>
+      <h3>An ad-blocking switch per site</h3>
+      <p>It refuses requests a public filter list names. The switch is yours: Longboard never flips it for you.</p>
     </article>
     <article>
       <h3>Private by default</h3>
-      <p>No telemetry, no analytics, no crash upload. Every request Longboard makes by itself is listed in Settings and can be turned off there, bar the engine's own download of the protected-playback component.</p>
+      <p>No telemetry, analytics or crash upload. Sites are asked about before they get the camera, microphone or your location.</p>
     </article>
     <article>
-      <h3>Asks before it gives</h3>
-      <p>A site is asked about before it gets the camera, the microphone, your location or notifications, and before a file is saved. There is no way past a certificate error.</p>
-    </article>
-    <article>
-      <h3>Tabs, history and private tabs</h3>
-      <p>Up to eight tabs, a history you can switch off, saved pages on Home, find on the page and a reader view.</p>
-    </article>
-    <article>
-      <h3>A parental lock, passwords, extensions</h3>
-      <p>A lock with a PIN. Passwords kept only when you ask and only with a system keyring. Extensions from the Chrome Web Store, though not all of them work.</p>
+      <h3>The rest of a browser</h3>
+      <p>Tabs and private tabs, history, reader view, a parental lock with a PIN, saved passwords, and extensions from the Chrome Web Store, though not all of them work.</p>
     </article>
   </div>
 
@@ -200,7 +197,7 @@
         <tr><th scope="row">Arrows, D-pad</th><td>Move the highlight; scroll when there is nothing to move to</td></tr>
         <tr><th scope="row">OK, Enter, A</th><td>Select. On a text field: bring up the on-screen keyboard</td></tr>
         <tr><th scope="row">Back, Backspace, Escape, B</th><td>Back; Home from a site's first page</td></tr>
-        <tr><th scope="row">Menu key, Ctrl+O, Start, or Up twice at the top of a website</th><td>The menu: address, Home, Back, Forward, Reload, zoom, pointer, the ad-blocking switch, Speak, Type from a phone, tabs, history, Settings</td></tr>
+        <tr><th scope="row">Menu key, Ctrl+O, Start, or Up twice at the top of a website</th><td>The menu: address, tabs, history, zoom, pointer, the ad-blocking switch, Speak, Type from a phone, Settings</td></tr>
         <tr><th scope="row">F2, or pressing the right stick</th><td>Pointer mode on and off</td></tr>
         <tr><th scope="row">A remote's Home button</th><td>Home</td></tr>
       </tbody>
@@ -229,6 +226,7 @@
           <p>One file that runs as it is. It looks for new releases daily and installs them; Settings can turn that off.</p>
           <pre><code data-how>chmod +x Longboard-x86_64.AppImage
 ./Longboard-x86_64.AppImage</code></pre>
+          <details class="sum" hidden><summary>Check the file after downloading</summary><pre><code data-sum></code></pre></details>
         </div>
         <a class="button primary" data-link href="https://github.com/AndrewGBest/Longboard/releases/latest/download/Longboard-x86_64.AppImage"><span><strong>Download</strong><small data-meta>AppImage</small></span></a>
       </article>
@@ -237,6 +235,7 @@
           <h3>Flatpak bundle</h3>
           <p>For systems that install apps as Flatpaks, such as Fedora's atomic desktops.</p>
           <pre><code data-how>flatpak install --user ./Longboard.flatpak</code></pre>
+          <details class="sum" hidden><summary>Check the file after downloading</summary><pre><code data-sum></code></pre></details>
         </div>
         <a class="button" data-link href="https://github.com/AndrewGBest/Longboard/releases/latest"><span><strong>Download</strong><small data-meta>On the release page</small></span></a>
       </article>
@@ -245,6 +244,7 @@
           <h3>tar.gz</h3>
           <p>The program in a plain archive, to unpack wherever you like.</p>
           <pre><code data-how>tar -xzf Longboard.tar.gz</code></pre>
+          <details class="sum" hidden><summary>Check the file after downloading</summary><pre><code data-sum></code></pre></details>
         </div>
         <a class="button" data-link href="https://github.com/AndrewGBest/Longboard/releases/latest"><span><strong>Download</strong><small data-meta>On the release page</small></span></a>
       </article>
@@ -265,9 +265,9 @@
   </div>
 </section>
 
-<section id="honest" class="band">
+<section id="know" class="band">
   <div class="section-head">
-    <h2>Straight answers</h2>
+    <h2>Before you install</h2>
     <p>Longboard is an early build. Expect rough edges, and know what you are getting.</p>
   </div>
   <div class="two">
