@@ -230,6 +230,7 @@
     var stack = ['home'];
     var remembered = {};
     var toastTimer = 0;
+    var upAtTop = false;
 
     function top() { return views[stack[stack.length - 1]]; }
     function targets() { return Array.prototype.slice.call(top().querySelectorAll('[data-t]')); }
@@ -290,7 +291,12 @@
         var score = Math.max(along, 0) + across * (overlap ? 0.35 : 2);
         if (score < bestScore) { bestScore = score; best = el; }
       });
-      if (best) focus(best);
+      if (best) { focus(best); return; }
+      // As in Longboard: on a website, Up at the top and then Up again brings the menu.
+      if (dir === 'up' && stack[stack.length - 1] === 'site') {
+        if (upAtTop) { upAtTop = false; clearTimeout(toastTimer); toast.hidden = true; menu(); }
+        else { upAtTop = true; say('Press Up again for the menu'); }
+      }
     }
 
     function back() {
@@ -330,6 +336,7 @@
         button.classList.add('pressed');
         setTimeout(function () { button.classList.remove('pressed'); }, 160);
       }
+      if (key !== 'up') upAtTop = false;
       if (key === 'ok') ok();
       else if (key === 'back') back();
       else if (key === 'menu') menu();
@@ -337,7 +344,7 @@
     }
 
     // Until somebody takes the remote, it plays by itself.
-    var script = ['right', 'right', 'down', 'left', 'ok', 'down', 'right', 'right', 'ok', 'up', 'back', 'up', 'up', 'right', 'ok', 'down', 'down', 'ok', 'back', 'down', 'left', 'left', 'left'];
+    var script = ['right', 'right', 'down', 'left', 'ok', 'up', 'up', 'down', 'down', 'back', 'down', 'right', 'ok', 'back', 'up', 'right', 'up', 'left', 'left', 'left', 'down'];
     var step = 0;
     var auto = 0;
     var visible = false;
